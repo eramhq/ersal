@@ -7,7 +7,7 @@ namespace Eram\Ersal\Event;
 final class ShipmentFailed
 {
     /**
-     * @param 'quote'|'book'|'track'|'cancel'|'label'|'pickup' $operation
+     * @param 'quote'|'book'|'track'|'cancel' $operation
      */
     public function __construct(
         public string $providerName,

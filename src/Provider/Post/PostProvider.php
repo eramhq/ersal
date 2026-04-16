@@ -330,18 +330,6 @@ final class PostProvider extends AbstractSoapProvider implements
 
     private function mapStatus(string $raw): ShipmentStatus
     {
-        return match (strtolower($raw)) {
-            'draft' => ShipmentStatus::Draft,
-            'quoted' => ShipmentStatus::Quoted,
-            'booked', 'accepted', 'registered' => ShipmentStatus::Booked,
-            'picked_up', 'collected' => ShipmentStatus::PickedUp,
-            'in_transit', 'dispatched' => ShipmentStatus::InTransit,
-            'out_for_delivery' => ShipmentStatus::OutForDelivery,
-            'delivered' => ShipmentStatus::Delivered,
-            'failed', 'undeliverable' => ShipmentStatus::Failed,
-            'returned' => ShipmentStatus::Returned,
-            'cancelled', 'canceled' => ShipmentStatus::Cancelled,
-            default => ShipmentStatus::InTransit,
-        };
+        return ShipmentStatus::fromCanonical($raw);
     }
 }

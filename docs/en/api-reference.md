@@ -114,18 +114,6 @@ final class Amount
 }
 ```
 
-### Currency
-
-```php
-enum Currency: string
-{
-    case IRR = 'IRR';
-    case IRT = 'IRT';
-
-    public function label(): string;
-}
-```
-
 ## Address & Parcel
 
 ### Address

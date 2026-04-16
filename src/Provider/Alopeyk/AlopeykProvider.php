@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Eram\Ersal\Provider\Alopeyk;
 
-use Eram\Ersal\Address\Address;
-use Eram\Ersal\Address\Parcel;
 use Eram\Ersal\Contracts\ShipmentInterface;
 use Eram\Ersal\Contracts\ShippingInterface;
 use Eram\Ersal\Contracts\SupportsPickup;
@@ -25,13 +23,12 @@ use Eram\Ersal\Request\QuoteRequest;
 use Eram\Ersal\Shipment\Shipment;
 use Eram\Ersal\Shipment\ShipmentId;
 use Eram\Ersal\Shipment\ShipmentStatus;
-use Eram\Ersal\Tracking\TrackingEvent;
 
 /**
  * Alopeyk (الوپیک) on-demand urban delivery — REST API.
  *
  * Capabilities: quote, book, track, cancel, pickup.
- * Alopeyk is optimized for same-city courier runs; no COD and no labels.
+ * No COD and no printed labels (urban same-day model).
  */
 final class AlopeykProvider extends AbstractProvider implements
     ShippingInterface,
@@ -106,7 +103,7 @@ final class AlopeykProvider extends AbstractProvider implements
             id: new ShipmentId((string) ($data['order_id'] ?? '')),
             providerName: $this->getName(),
             trackingCode: (string) ($data['tracking_code'] ?? ''),
-            status: $this->mapStatus((string) ($data['status'] ?? 'booked')),
+            status: ShipmentStatus::fromCanonical((string) ($data['status'] ?? 'booked')),
             origin: $request->origin,
             destination: $request->destination,
             parcel: $request->parcel,
@@ -124,7 +121,13 @@ final class AlopeykProvider extends AbstractProvider implements
         $response = $this->getJson($this->url('/orders/' . rawurlencode($id->value())), $this->authHeaders());
         $this->assertOk($response, 'track');
 
-        return $this->hydrate($id, $response['data'] ?? [], track: true);
+        /** @var array<string, mixed> $data */
+        $data = $response['data'] ?? [];
+        $shipment = $this->hydrateShipment($id, $data);
+
+        $this->dispatch(new ShipmentTracked($this->getName(), $shipment));
+
+        return $shipment;
     }
 
     public function cancel(ShipmentId $id): ShipmentInterface
@@ -132,7 +135,9 @@ final class AlopeykProvider extends AbstractProvider implements
         $response = $this->deleteJson($this->url('/orders/' . rawurlencode($id->value())), $this->authHeaders());
         $this->assertOk($response, 'cancel');
 
-        $shipment = $this->hydrate($id, $response['data'] ?? [], track: false)->withStatus(ShipmentStatus::Cancelled);
+        /** @var array<string, mixed> $data */
+        $data = $response['data'] ?? [];
+        $shipment = $this->hydrateShipment($id, $data)->withStatus(ShipmentStatus::Cancelled);
         $this->dispatch(new ShipmentCancelled($this->getName(), $shipment));
 
         return $shipment;
@@ -150,9 +155,22 @@ final class AlopeykProvider extends AbstractProvider implements
             $this->authHeaders(),
         );
 
-        $this->assertOk($response, 'pickup');
+        $this->assertOk($response, 'book');
 
-        return $this->hydrate($id, $response['data'] ?? [], track: true);
+        /** @var array<string, mixed> $data */
+        $data = $response['data'] ?? [];
+
+        return $this->hydrateShipment($id, $data);
+    }
+
+    protected function resolveErrorMessage(int $code): ?string
+    {
+        return AlopeykErrorCode::tryFrom($code)?->message();
+    }
+
+    protected function defaultErrorCode(): int
+    {
+        return AlopeykErrorCode::InternalError->value;
     }
 
     private function url(string $path): string
@@ -168,159 +186,5 @@ final class AlopeykProvider extends AbstractProvider implements
     private function authHeaders(): array
     {
         return ['Authorization' => 'Bearer ' . $this->config->token];
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function serializeAddress(Address $a): array
-    {
-        return [
-            'first_name' => $a->firstName, 'last_name' => $a->lastName, 'phone' => $a->phone,
-            'province' => $a->province, 'city' => $a->city, 'address_line' => $a->addressLine,
-            'postal_code' => $a->postalCode, 'plate' => $a->plate, 'unit' => $a->unit,
-            'lat' => $a->lat, 'lng' => $a->lng,
-        ];
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function serializeParcel(Parcel $p): array
-    {
-        return [
-            'weight_grams' => $p->weightGrams, 'length_mm' => $p->lengthMm,
-            'width_mm' => $p->widthMm, 'height_mm' => $p->heightMm,
-            'declared_value' => $p->declaredValue?->inRials(),
-            'contents' => $p->contentsDescription, 'fragile' => $p->fragile,
-        ];
-    }
-
-    /**
-     * @param array<string, mixed> $response
-     */
-    private function assertOk(array $response, string $operation): void
-    {
-        if (!isset($response['error'])) {
-            return;
-        }
-
-        /** @var array<string, mixed> $error */
-        $error = $response['error'];
-        $code = (int) ($error['code'] ?? 5999);
-        $errorEnum = AlopeykErrorCode::tryFrom($code);
-        $message = $errorEnum?->message() ?? (string) ($error['message'] ?? "Unknown error code: {$code}");
-
-        match ($operation) {
-            'book' => $this->failBooking($message, $code),
-            'track' => $this->failTracking($message, $code),
-            'cancel' => $this->failCancellation($message, $code),
-            default => $this->failQuote($message, $code),
-        };
-    }
-
-    /**
-     * @param array<string, mixed> $data
-     */
-    private function hydrate(ShipmentId $id, array $data, bool $track): ShipmentInterface
-    {
-        $origin = isset($data['origin']) && \is_array($data['origin'])
-            ? $this->deserializeAddress($data['origin'])
-            : $this->placeholderAddress();
-        $destination = isset($data['destination']) && \is_array($data['destination'])
-            ? $this->deserializeAddress($data['destination'])
-            : $this->placeholderAddress();
-        $parcel = isset($data['parcel']) && \is_array($data['parcel'])
-            ? $this->deserializeParcel($data['parcel'])
-            : new Parcel(weightGrams: 1);
-
-        $history = [];
-        /** @var list<array<string, mixed>> $events */
-        $events = $data['history'] ?? [];
-        foreach ($events as $event) {
-            $history[] = new TrackingEvent(
-                at: new \DateTimeImmutable((string) ($event['at'] ?? 'now')),
-                status: $this->mapStatus((string) ($event['status'] ?? 'in_transit')),
-                description: (string) ($event['description'] ?? ''),
-                location: $this->nullIfEmpty((string) ($event['location'] ?? '')),
-                raw: $event,
-            );
-        }
-
-        $shipment = new Shipment(
-            id: $id,
-            providerName: $this->getName(),
-            trackingCode: (string) ($data['tracking_code'] ?? ''),
-            status: $this->mapStatus((string) ($data['status'] ?? 'booked')),
-            origin: $origin,
-            destination: $destination,
-            parcel: $parcel,
-            cost: isset($data['cost']) ? Amount::fromRials((int) $data['cost']) : null,
-            history: $history,
-            extra: $data,
-        );
-
-        if ($track) {
-            $this->dispatch(new ShipmentTracked($this->getName(), $shipment));
-        }
-
-        return $shipment;
-    }
-
-    /**
-     * @param array<string, mixed> $d
-     */
-    private function deserializeAddress(array $d): Address
-    {
-        return new Address(
-            firstName: (string) ($d['first_name'] ?? '-'),
-            lastName: (string) ($d['last_name'] ?? '-'),
-            phone: (string) ($d['phone'] ?? '09000000000'),
-            province: (string) ($d['province'] ?? '-'),
-            city: (string) ($d['city'] ?? '-'),
-            addressLine: (string) ($d['address_line'] ?? '-'),
-        );
-    }
-
-    /**
-     * @param array<string, mixed> $d
-     */
-    private function deserializeParcel(array $d): Parcel
-    {
-        return new Parcel(
-            weightGrams: max(1, (int) ($d['weight_grams'] ?? 1)),
-            lengthMm: isset($d['length_mm']) ? (int) $d['length_mm'] : null,
-            widthMm: isset($d['width_mm']) ? (int) $d['width_mm'] : null,
-            heightMm: isset($d['height_mm']) ? (int) $d['height_mm'] : null,
-        );
-    }
-
-    private function placeholderAddress(): Address
-    {
-        return new Address(
-            firstName: '-',
-            lastName: '-',
-            phone: '09000000000',
-            province: '-',
-            city: '-',
-            addressLine: '-',
-        );
-    }
-
-    private function mapStatus(string $raw): ShipmentStatus
-    {
-        return match (strtolower($raw)) {
-            'draft' => ShipmentStatus::Draft,
-            'quoted' => ShipmentStatus::Quoted,
-            'booked', 'accepted', 'pending' => ShipmentStatus::Booked,
-            'picked_up' => ShipmentStatus::PickedUp,
-            'on_the_way', 'in_transit' => ShipmentStatus::InTransit,
-            'out_for_delivery', 'arriving' => ShipmentStatus::OutForDelivery,
-            'delivered', 'completed' => ShipmentStatus::Delivered,
-            'failed' => ShipmentStatus::Failed,
-            'returned' => ShipmentStatus::Returned,
-            'cancelled', 'canceled' => ShipmentStatus::Cancelled,
-            default => ShipmentStatus::InTransit,
-        };
     }
 }

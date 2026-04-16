@@ -25,6 +25,31 @@ enum ShipmentStatus: string
         };
     }
 
+    /**
+     * Map a carrier-reported status string to a canonical ShipmentStatus.
+     *
+     * Accepts the canonical value (`'in_transit'`) plus common synonyms
+     * across Iranian carriers (`'pending'`, `'rated'`, `'on_the_way'`,
+     * `'delivering'`, `'registered'`, `'completed'`, etc.). Unknown strings
+     * fall back to `InTransit` — a safe mid-flight default.
+     */
+    public static function fromCanonical(string $raw): self
+    {
+        return match (strtolower($raw)) {
+            'draft' => self::Draft,
+            'quoted', 'rated' => self::Quoted,
+            'booked', 'accepted', 'pending', 'registered' => self::Booked,
+            'picked_up', 'collected' => self::PickedUp,
+            'in_transit', 'shipping', 'dispatched', 'on_the_way' => self::InTransit,
+            'out_for_delivery', 'delivering', 'arriving' => self::OutForDelivery,
+            'delivered', 'completed' => self::Delivered,
+            'failed', 'undeliverable' => self::Failed,
+            'returned' => self::Returned,
+            'cancelled', 'canceled' => self::Cancelled,
+            default => self::InTransit,
+        };
+    }
+
     public function label(string $locale = 'fa'): string
     {
         if ($locale === 'fa') {

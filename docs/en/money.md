@@ -1,4 +1,4 @@
-# Money & Currency
+# Money
 
 Iranian commerce mixes Rial and Toman interchangeably. 1 Toman = 10 Rials. Carrier APIs typically expect Rials, but merchants think in Toman. A 10x error in either direction is catastrophic.
 
@@ -43,13 +43,3 @@ $a->lessThan($b);      // bool
 $a->isZero();          // bool
 ```
 
-## Currency enum
-
-```php
-use Eram\Ersal\Money\Currency;
-
-Currency::IRR->label();  // 'ریال'
-Currency::IRT->label();  // 'تومان'
-```
-
-`Currency` is informational. `Amount` is always stored and computed in Rials internally — there is no dual-currency Amount.

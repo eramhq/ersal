@@ -44,6 +44,9 @@ final class Parcel
     /**
      * Volumetric weight in grams using the standard 5000 divisor
      * (cm³ ÷ 5000 → kg, scaled to grams).
+     *
+     * Integer formulation: `ceil(l · w · h / 5000)` where l/w/h are in
+     * millimeters — done via ceil-division to avoid float drift.
      */
     public function volumetricWeightGrams(): ?int
     {
@@ -58,9 +61,7 @@ final class Parcel
         /** @var int $h */
         $h = $this->heightMm;
 
-        $volumeCm3 = ($l * $w * $h) / 1000;
-
-        return (int) ceil($volumeCm3 / 5);
+        return intdiv($l * $w * $h + 4999, 5000);
     }
 
     /**
