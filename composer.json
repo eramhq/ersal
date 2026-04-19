@@ -1,6 +1,6 @@
 {
     "name": "eram/ersal",
-    "description": "A simple, type-safe PHP library for Iranian shipping and courier services. Zero packagist dependencies.",
+    "description": "A simple, type-safe PHP library for Iranian shipping and courier services.",
     "type": "library",
     "license": "MIT",
     "keywords": [
@@ -32,6 +32,7 @@
     "homepage": "https://github.com/eramhq/ersal",
     "require": {
         "php": "^8.1",
+        "eram/abzar": "^0.6@beta",
         "ext-curl": "*",
         "ext-json": "*",
         "ext-openssl": "*",
@@ -39,7 +40,7 @@
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.40",
-        "phpstan/phpstan": "^1.10",
+        "phpstan/phpstan": "^2.1",
         "phpunit/phpunit": "^10.0 || ^11.0"
     },
     "autoload": {

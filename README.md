@@ -1,6 +1,6 @@
 # Ersal
 
-A unified, type-safe, zero-dependency PHP library for Iranian shipping and courier services.
+A unified, type-safe PHP library for Iranian shipping and courier services.
 
 [![Tests](https://github.com/eramhq/ersal/actions/workflows/tests.yml/badge.svg)](https://github.com/eramhq/ersal/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
@@ -14,7 +14,7 @@ Ersal (ارسال, "shipping" in Farsi) is an omni-carrier PHP library that give
 
 **Why Ersal?**
 
-- **Zero Composer dependencies** — relies only on standard PHP extensions (`ext-curl`, `ext-json`, `ext-openssl`, `ext-soap`). No Guzzle, no framework coupling, no supply-chain risk.
+- **Minimal dependencies** — one internal Composer package ([`eram/abzar`](https://github.com/eramhq/abzar-php), Persian/Iranian utilities) plus the standard PHP extensions `ext-curl`, `ext-json`, `ext-openssl`, `ext-soap`. No Guzzle, no framework coupling, no third-party supply-chain risk.
 - **One interface, every carrier** — `quote()` → `createShipment()` → `track()` → `cancel()`. Same flow whether it's Iran Post or Alopeyk.
 - **Type-safe value objects** — `Address`, `Parcel`, `ShipmentStatus`, `TrackingEvent` — no stringly-typed dictionaries.
 - **Integer units everywhere** — grams for weight, millimeters for dimensions, Rials for money. Zero floating-point drift.

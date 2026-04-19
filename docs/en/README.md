@@ -1,6 +1,6 @@
 # Ersal Documentation
 
-Type-safe, zero-dependency PHP library for Iranian shipping and courier services.
+Type-safe PHP library for Iranian shipping and courier services.
 
 ## Learning Resources
 

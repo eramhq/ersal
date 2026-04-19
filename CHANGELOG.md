@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [Unreleased]
+
+## [0.2.0-beta.1] - 2026-04-19
+
+### Changed
+- Now depends on [`eram/abzar`](https://github.com/eramhq/abzar-php) `^0.6@beta` for shared Iranian utilities.
+- `Eram\Ersal\Money\Amount` → **moved** to `Eram\Abzar\Money\Amount`. Update imports.
+
+### Removed
+- `Eram\Ersal\Money\Amount` — use `Eram\Abzar\Money\Amount`.
+- `Eram\Ersal\Exception\InvalidAmountException` — negative amounts now throw `Eram\Abzar\Exception\FormatException` with `ErrorCode::AMOUNT_NEGATIVE`. Note that this exception does **not** extend `ErsalException`, so host apps catching `ErsalException` must also catch `Eram\Abzar\Exception\AbzarException`.
+
+### Docs
+- Reworded "zero dependencies" / "zero Composer dependencies" claims across `README.md`, `docs/en/README.md`, `docs/en/getting-started.md`, `docs/en/faq.md`, `docs/en/http-and-logging.md`, and the composer `description` to reflect the single `eram/abzar` runtime dependency.
+
 ## [0.1.0-beta.1] - 2026-04-16
 
 ### Added

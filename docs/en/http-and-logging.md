@@ -2,7 +2,7 @@
 
 ## Default transport
 
-Ersal ships with `CurlHttpClient`, a persistent-handle implementation built on PHP's native `ext-curl`. Zero Composer dependencies, zero Guzzle, zero framework coupling.
+Ersal ships with `CurlHttpClient`, a persistent-handle implementation built on PHP's native `ext-curl`. No Guzzle, no framework coupling — just the standard extension.
 
 Default settings:
 

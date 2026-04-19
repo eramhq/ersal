@@ -6,7 +6,7 @@ namespace Eram\Ersal\Request;
 
 use Eram\Ersal\Address\Address;
 use Eram\Ersal\Address\Parcel;
-use Eram\Ersal\Money\Amount;
+use Eram\Abzar\Money\Amount;
 
 /**
  * Immutable DTO for quoting a shipment without booking it.

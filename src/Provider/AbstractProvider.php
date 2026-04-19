@@ -14,7 +14,7 @@ use Eram\Ersal\Http\HttpClient;
 use Eram\Ersal\Http\HttpResponse;
 use Eram\Ersal\Http\Logger;
 use Eram\Ersal\Http\NullLogger;
-use Eram\Ersal\Money\Amount;
+use Eram\Abzar\Money\Amount;
 use Eram\Ersal\Shipment\Shipment;
 use Eram\Ersal\Shipment\ShipmentId;
 use Eram\Ersal\Shipment\ShipmentStatus;

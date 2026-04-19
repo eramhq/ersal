@@ -1,14 +1,14 @@
 # FAQ
 
-## Why zero Composer dependencies?
+## Why so few Composer dependencies?
 
-Iranian developers often work in restricted-network environments (sanctions, corporate proxies, intermittent Packagist access). Zero deps means:
+Iranian developers often work in restricted-network environments (sanctions, corporate proxies, intermittent Packagist access). A minimal dependency footprint means:
 
-- Nothing to audit for supply-chain risk
+- Less to audit for supply-chain risk
 - Install works offline once the source is vendored
 - No framework-specific coupling — the same code runs on Laravel, Symfony, Slim, or plain PHP
 
-Ersal only uses what ships with PHP itself: `ext-curl`, `ext-json`, `ext-openssl`, `ext-soap`.
+Ersal's only Composer dependency is [`eram/abzar`](https://github.com/eramhq/abzar-php) — our own Persian/Iranian utility library, MIT-licensed and itself free of third-party runtime deps. Everything else comes from PHP itself: `ext-curl`, `ext-json`, `ext-openssl`, `ext-soap`.
 
 ## Why integer grams and millimeters?
 

@@ -11,7 +11,7 @@
 composer require eram/ersal
 ```
 
-Ersal has **zero** Composer dependencies. It only relies on PHP extensions that ship with most PHP installations.
+Ersal has a single Composer dependency — [`eram/abzar`](https://github.com/eramhq/abzar-php), the shared Persian/Iranian utility library — plus the PHP extensions that ship with most installations.
 
 ## Quick Example
 

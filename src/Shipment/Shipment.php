@@ -7,7 +7,7 @@ namespace Eram\Ersal\Shipment;
 use Eram\Ersal\Address\Address;
 use Eram\Ersal\Address\Parcel;
 use Eram\Ersal\Contracts\ShipmentInterface;
-use Eram\Ersal\Money\Amount;
+use Eram\Abzar\Money\Amount;
 use Eram\Ersal\Tracking\TrackingEvent;
 
 /**

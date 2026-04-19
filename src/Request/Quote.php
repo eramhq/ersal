@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Eram\Ersal\Request;
 
-use Eram\Ersal\Money\Amount;
+use Eram\Abzar\Money\Amount;
 
 /**
  * A single priced quote returned from ShippingInterface::quote().
