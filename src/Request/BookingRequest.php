@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Eram\Ersal\Request;
 
+use Eram\Abzar\Money\Amount;
 use Eram\Ersal\Address\Address;
 use Eram\Ersal\Address\Parcel;
-use Eram\Abzar\Money\Amount;
 
 /**
  * Immutable DTO for creating (booking) a shipment with a carrier.

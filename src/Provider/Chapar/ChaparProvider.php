@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Eram\Ersal\Provider\Chapar;
 
+use Eram\Abzar\Money\Amount;
 use Eram\Ersal\Contracts\ShipmentInterface;
 use Eram\Ersal\Contracts\ShippingInterface;
 use Eram\Ersal\Contracts\SupportsCOD;
@@ -16,7 +17,6 @@ use Eram\Ersal\Event\ShipmentTracked;
 use Eram\Ersal\Http\EventDispatcher;
 use Eram\Ersal\Http\HttpClient;
 use Eram\Ersal\Http\Logger;
-use Eram\Abzar\Money\Amount;
 use Eram\Ersal\Provider\AbstractProvider;
 use Eram\Ersal\Request\BookingRequest;
 use Eram\Ersal\Request\LabelResponse;

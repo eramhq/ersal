@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Eram\Ersal\Provider\Post;
 
+use Eram\Abzar\Money\Amount;
 use Eram\Ersal\Address\Address;
 use Eram\Ersal\Address\Parcel;
 use Eram\Ersal\Catalog\Branch;
@@ -18,7 +19,6 @@ use Eram\Ersal\Event\ShipmentTracked;
 use Eram\Ersal\Http\EventDispatcher;
 use Eram\Ersal\Http\Logger;
 use Eram\Ersal\Http\SoapClientFactory;
-use Eram\Abzar\Money\Amount;
 use Eram\Ersal\Provider\AbstractSoapProvider;
 use Eram\Ersal\Request\BookingRequest;
 use Eram\Ersal\Request\LabelResponse;

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Eram\Ersal\Contracts;
 
+use Eram\Abzar\Money\Amount;
 use Eram\Ersal\Address\Address;
 use Eram\Ersal\Address\Parcel;
-use Eram\Abzar\Money\Amount;
 use Eram\Ersal\Shipment\ShipmentId;
 use Eram\Ersal\Shipment\ShipmentStatus;
 use Eram\Ersal\Tracking\TrackingEvent;

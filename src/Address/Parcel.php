@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Eram\Ersal\Address;
 
-use Eram\Ersal\Exception\InvalidParcelException;
 use Eram\Abzar\Money\Amount;
+use Eram\Ersal\Exception\InvalidParcelException;
 
 /**
  * Immutable value object representing a physical parcel.
