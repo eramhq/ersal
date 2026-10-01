@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+## [0.2.0-beta.2] - 2026-10-01
+
+### Changed
+- Now depends on [`eram/abzar`](https://github.com/eramhq/abzar-php) `^0.8@beta` (was `^0.6@beta`). No code changes were needed here; see abzar's [UPGRADE.md](https://github.com/eramhq/abzar-php/blob/main/UPGRADE.md) if your app uses abzar directly.
+- Negative amounts now throw `Eram\Abzar\Exception\MoneyException` (was `FormatException`), still with `ErrorCode::AMOUNT_NEGATIVE`. Apps that catch `Eram\Abzar\Exception\AbzarException` alongside `ErsalException` are unaffected; apps that catch `FormatException` by name must switch to `MoneyException`.
+
 ## [0.2.0-beta.1] - 2026-04-19
 
 ### Changed

@@ -32,7 +32,7 @@
     "homepage": "https://github.com/eramhq/ersal",
     "require": {
         "php": "^8.1",
-        "eram/abzar": "^0.6@beta",
+        "eram/abzar": "^0.8@beta",
         "ext-curl": "*",
         "ext-json": "*",
         "ext-openssl": "*",
